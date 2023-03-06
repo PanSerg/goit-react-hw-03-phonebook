@@ -1,75 +1,82 @@
-// import { Component } from 'react';
-// import Header from '.';
-// import Search from '.';
+import React, { Component } from "react";
+import { ContactForm } from "./ContactForm/contactForm";
+import { nanoid } from "nanoid";
+import { Contact } from "./Contacts/contacts";
+import { Filter } from "./Filter/filter";
 
-// class App extends Component {
-//   render() {
-//     return (
-//       <div className='container'>
-//         <Header onShowModalLogin={this.toggleModalLogin} />
-//         <Search />
-//       </div>
-//     )
-//   }
-// };
+export class App extends Component {
+  state = {
+    contacts: [
+        {id: 'id-1', name: 'Rosie Simpson', number: '459-12-56'},
+        {id: 'id-2', name: 'Hermione Kline', number: '443-89-12'},
+        {id: 'id-3', name: 'Eden Clements', number: '645-17-79'},
+        {id: 'id-4', name: 'Annie Copeland', number: '227-91-26'},
+        ],
+        filter: '',
+    };
 
-// export default App
-
-
-
-// video Repeta
-
-// import { Component } from 'react';
-// // import { RecipeList } from './RecipeList/RecipeList';
-// // import { GlobalStyle } from './GlobalStyle';
-// // import { Layout } from './Layout/Layout';
-// // import initialRecipes from '../recipes.json';
-// // import { RecipeForm } from './RecipeForm/RecipeForm';
-
-// export class App extends Component {
-//   state = {
-//     recipes: [],
-//   };
+    componentDidMount() {
+        const getContact = localStorage.getItem('contact');
+        const parseContact = JSON.parse(getContact);
+        if (parseContact !== null) {
+            this.setState({ contacts: parseContact });
+            return;
+        }
+    };
   
-//   componentDidMount() {
-//     const savedRecipes = localStorage.getItem('recipes');
-//     if (savedRecipes !== null) {
-//       const parsedRecipes = JSON.parse(savedRecipes);
-//       this.setState({ recipes: parsedRecipes });
-//       return;
-//     }
-//     this.setState({ recipes: initialRecipes });
-//   }
+    componentDidUpdate(prevProps, prevState) {
+        if (prevState.contacts !== this.state.contacts) {
+            localStorage.setItem('contact', JSON.stringify(this.state.contacts));
+      }
+    }; 
 
-//   componentDidUpdate(_, prevState) {
-//     if (prevState.recipe !== this.state.recipes) {
-//       localStorage.setItem('recipes', JSON.stringify(this.state.recipes));
-//     }
-//   };
+  addContactName = ({name, number}) => {
+    const addContact = {
+      id: nanoid(),
+      name,
+      number,
+    };
 
-//   addRecipe = newRecipe => {
-//     this.setState(prevState => {
-//       return {
-//         recipes: [...prevState.recipes, newRecipe],
-//       };
-//     });
-//   };
+    const upCont = this.state.contacts.find(( contact ) => contact.name.toLocaleLowerCase() === name.toLocaleLowerCase());
+    if (upCont) {
+      return alert(`${name} is already in contacts.`);
+    };
 
-//   deleteRecipe = recipeId => {
-//     this.setState(prevState => {
-//       return {
-//         recipes: prevState.recipes.filter(recipe => recipe.id !== recipeId),
-//       };
-//     });
-//   };
+    this.setState(prevState => ({
+      contacts: [addContact, ...prevState.contacts],
+    }))
+  };
 
-//   render() {
-//     return (
-//       <Layout>
-//         <RecipeForm onSave={this.addRecipe} />
-//         <RecipeList items={this.state.recipes} onDelete={this.deleteRecipe} />
-//         <GlobalStyle />
-//       </Layout>
-//     );
-//   }
-// }
+ filterChange = evt => {
+    this.setState({ filter: evt.target.value });
+  };
+
+  filterRender = () => {
+    const { filter, contacts } = this.state;
+    const normalizedFilter = filter.toLocaleLowerCase();
+    return contacts.filter(contact =>
+      contact.name.toLocaleLowerCase().includes(normalizedFilter));
+  };
+
+  onDelete = id => {
+    this.setState(prevState => ({
+      contacts: prevState.contacts.filter(contact => contact.id !== id)
+    }));
+      const localClear = this.state.contacts.filter(contact => contact.id === id);
+
+      localStorage.removeItem(localClear[0].name);
+      this.setState({ filter: '' });
+  };
+
+  render() {
+    const visibleStat = this.filterRender();
+    return (
+      <div>
+        <h2>Phonebook</h2>
+        <ContactForm addContactName={this.addContactName} />
+        <Filter onChange={this.filterChange} value={this.state.filter} />
+        <Contact dataContact={visibleStat} onDelete={this.onDelete} />
+      </div>
+    )
+  }
+};
