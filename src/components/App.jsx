@@ -1,19 +1,19 @@
-import { Component } from 'react';
-import Header from '.';
-import Search from '.';
+// import { Component } from 'react';
+// import Header from '.';
+// import Search from '.';
 
-class App extends Component {
-  render() {
-    return (
-      <div className='container'>
-        <Header onShowModalLogin={this.toggleModalLogin} />
-        <Search />
-      </div>
-    )
-  }
-};
+// class App extends Component {
+//   render() {
+//     return (
+//       <div className='container'>
+//         <Header onShowModalLogin={this.toggleModalLogin} />
+//         <Search />
+//       </div>
+//     )
+//   }
+// };
 
-export default App
+// export default App
 
 
 
