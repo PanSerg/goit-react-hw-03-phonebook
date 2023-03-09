@@ -62,10 +62,6 @@ export class App extends Component {
     this.setState(prevState => ({
       contacts: prevState.contacts.filter(contact => contact.id !== id)
     }));
-      const localClear = this.state.contacts.filter(contact => contact.id === id);
-
-      localStorage.removeItem(localClear[0].name);
-      this.setState({ filter: '' });
   };
 
   render() {
